@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteStudent, fetchStudents } from "./studentSlice";
 import { useParams, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 const StudentView = () => {
   const { studentsId } = useParams();
@@ -27,9 +29,26 @@ const StudentView = () => {
   if (!studentView) {
     return <p className="text-center mt-4">Student not found</p>;
   }
+  
+const handleDelete = async () => {
+  try {
+    await dispatch(deleteStudent(studentView._id));
+    toast.success("Student deleted successfully!");
+
+    setTimeout(() => {
+      navigate("/");
+    }, 2000); // toast ko time milta hai
+  } catch (error) {
+    toast.error("Failed to delete student");
+  }
+};
+
 
   return (
+    <>
+      <ToastContainer position="top-right" autoClose={2000} />
     <div className="container mt-4">
+      
       <div className="card shadow">
         <div className="card-header bg-primary text-white">
           <h4>Student Details</h4>
@@ -53,7 +72,7 @@ const StudentView = () => {
 
             <button
               className="btn btn-danger"
-              onClick={() => dispatch(deleteStudent(studentView._id)).then(()=>navigate("/"))}
+              onClick={handleDelete}
             >
               Delete
             </button>
@@ -68,6 +87,7 @@ const StudentView = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
